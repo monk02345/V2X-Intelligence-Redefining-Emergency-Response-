@@ -68,7 +68,7 @@ Follow this specific sequence to initialize the V2X network for a live demonstra
 *The infrastructure unit is the final piece that manages the physical hardware override.*
 
 1.  **Hardware Connection:** Plug the **Arduino Uno** into the laptop via USB.
-2.  **Arduino Setup:** Upload `junction_logic.ino` using the Arduino IDE. Confirm the Port (e.g., `COM5`).
+2.  **Arduino Setup:** Upload `trafficcontrol.ino` using the Arduino IDE. Confirm the Port (e.g., `COM5`).
 3.  **Run Decision Engine:**
     ```bash
     v2xrsutest.py
