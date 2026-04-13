@@ -6,5 +6,6 @@ This is an intelligent traffic management solution designed to reduce emergency 
 
 ## Tech Stack
 **Hardware**:Raspberry Pi 4b, Neo 6M GPS Module, Waveshare 7600-H Dongle, ARDUINO UNO, 5V Traffic Light Module *5, 12V Power Supply
-**Software**: Google My Maps, Graphhopper, Open Street Map API, Google Map API, Ubuntu OS
+**Software**: Google My Maps, Graphhopper, Open Street Map API, Google Map API, Ubuntu OS  
 **Communication**: Vehicle to Vehicle (Using Wi-fi Direct 2.4 GHz), Vehicle to Infrastructure (Using MQTT Cloud: broker.hivemq.com)
+
