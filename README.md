@@ -46,7 +46,7 @@ Follow this specific sequence to initialize the V2X network for a live demonstra
 2.  **Internet Access:** Ensure the Pi is connected to the internet (via 4G Hat or Hotspot) to reach the MQTT Broker.
 3.  **Run Broadcasting Script:**
     ```bash
-    python host_transmitter.py
+    integrator.py
     ```
 
 
@@ -60,7 +60,7 @@ Follow this specific sequence to initialize the V2X network for a live demonstra
     ```bash
     python remote_receiver.py
     ```
-3.  **Success Indicator:** The terminal will show `[V2V] Listening for local proximity signals...`. The interface will remain idle until the Host Vehicle is within range.
+
 
 ---
 
@@ -71,7 +71,7 @@ Follow this specific sequence to initialize the V2X network for a live demonstra
 2.  **Arduino Setup:** Upload `junction_logic.ino` using the Arduino IDE. Confirm the Port (e.g., `COM5`).
 3.  **Run Decision Engine:**
     ```bash
-    python rsu_main.py
+    v2xrsutest.py
     ```
 4.  **Success Indicator:** * The console should print `Connected to Arduino on COM5`.
     * A **Google Maps** window will launch, showing the geofenced sectors.
