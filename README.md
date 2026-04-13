@@ -1,6 +1,6 @@
 # V2X-Intelligence: Redefining Emergency Response
 ## OVERVIEW
-This is an intelligent traffic management solution designed to reduce emergency response times. It uses V2I (Vehicle-to-Infrastructure) to preempt traffic lights and V2V (Vehicle-to-Vehicle) to alert surrounding drivers.
+This is an intelligent traffic management solution designed to prioritize and navigate emergency vehicles through desnse traffic and thus reduce emergency response times. It uses V2I (Vehicle-to-Infrastructure) to preempt traffic lights and V2V (Vehicle-to-Vehicle) to alert surrounding drivers.
 ## SYSTEM ARCHITECTURE
 <img width="876" height="415" alt="image" src="https://github.com/user-attachments/assets/63e01652-4d0c-483e-930f-b7aaa67a41f1" />  
 
