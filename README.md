@@ -33,4 +33,46 @@ Ensures localized awareness for nearby civilian drivers.
 **Cloud Protocol:** MQTT (via `paho-mqtt`)  
 **Local Protocol:** UDP / Wi-Fi Direct
 
+#  Execution Guide:
 
+Follow this specific sequence to initialize the V2X network for a live demonstration.
+
+---
+
+## 1. Host Vehicle (The Transmitter)
+*The ambulance must start broadcasting telemetry to the cloud and local network first.*
+
+1.  **Hardware Connection:** Connect the **GPS Antenna** to the Raspberry Pi 4B.
+2.  **Internet Access:** Ensure the Pi is connected to the internet (via 4G Hat or Hotspot) to reach the MQTT Broker.
+3.  **Run Broadcasting Script:**
+    ```bash
+    python host_transmitter.py
+    ```
+4.  **Success Indicator:** The terminal should display: `[MQTT] Payload Sent` and `[UDP] V2V Heartbeat Active`.
+
+---
+
+## 2. Remote Vehicle (The Civilian Alert)
+*The civilian node is set to 'Passive Listening' mode to wait for the host's signal.*
+
+1.  **Network Setup:** Connect the unit to the same localized Wi-Fi Direct network or subnet as the Host Vehicle.
+2.  **Run Alert Script:**
+    ```bash
+    python remote_receiver.py
+    ```
+3.  **Success Indicator:** The terminal will show `[V2V] Listening for local proximity signals...`. The interface will remain idle until the Host Vehicle is within range.
+
+---
+
+## 3. Traffic Junction RSU (The Controller)
+*The infrastructure unit is the final piece that manages the physical hardware override.*
+
+1.  **Hardware Connection:** Plug the **Arduino Uno** into the laptop via USB.
+2.  **Arduino Setup:** Upload `junction_logic.ino` using the Arduino IDE. Confirm the Port (e.g., `COM5`).
+3.  **Run Decision Engine:**
+    ```bash
+    python rsu_main.py
+    ```
+4.  **Success Indicator:** * The console should print `Connected to Arduino on COM5`.
+    * A **Google Maps** window will launch, showing the geofenced sectors.
+    * The "Host Vehicle" marker should appear on the map as soon as the MQTT stream is received.
