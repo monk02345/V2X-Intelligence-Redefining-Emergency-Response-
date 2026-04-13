@@ -29,7 +29,8 @@ Ensures localized awareness for nearby civilian drivers.
 ## Tech Stack
 **Hardware**:Raspberry Pi 4b, Neo 6M GPS Module, Waveshare 7600-H Dongle, ARDUINO UNO, 5V Traffic Light Module *5, 12V Power Supply
 **Software**: Google My Maps, Graphhopper, Open Street Map API, Google Map API, Ubuntu OS  
-**Languages:** Python 3.x, C++ (Arduino)
-**Cloud Protocol:** MQTT (via `paho-mqtt`)
+**Languages:** Python 3.x, C++ (Arduino)  
+**Cloud Protocol:** MQTT (via `paho-mqtt`)  
 **Local Protocol:** UDP / Wi-Fi Direct
+
 
