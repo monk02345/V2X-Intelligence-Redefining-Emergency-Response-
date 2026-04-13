@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V2X Navigation Dashboard</title>
+   
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', 'Segoe UI', sans-serif; background: #fff; overflow: hidden; }
+        .navbar-custom { background: white; border-bottom: 1px solid #e0e0e0; padding: 12px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .navbar-custom h1 { font-size: 24px; font-weight: 600; color: #1f2937; margin: 0; display: flex; align-items: center; gap: 10px; }
+        .navbar-custom .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; }
+        .container-main { display: flex; height: calc(100vh - 64px); gap: 0; }
+        #map { flex: 1; width: 100%; position: relative; }
+        .sidebar { width: 420px; background: white; overflow-y: auto; border-left: 1px solid #e0e0e0; display: flex; flex-direction: column; }
+        .search-section { padding: 20px; border-bottom: 1px solid #e0e0e0; }
+        .search-box { position: relative; margin-bottom: 15px; }
+        .search-box input { width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; transition: all 0.2s; }
+        .search-box input:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        .search-box i { position: absolute; right: 12px; top: 12px; color: #999; }
+        .btn-route { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-route:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
+        .btn-clear-route { width: 100%; padding: 12px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
+        .btn-start-nav { width: 100%; padding: 14px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: none; margin-top: 12px; gap: 8px; align-items: center; justify-content: center; }
+        .btn-start-nav.show { display: flex; }
+        .navigation-active { padding: 10px 14px; background: linear-gradient(135deg, #00c896 0%, #00a86b 100%); color: white; border-radius: 6px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+        .navigation-active i { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .route-info-card { display: none; padding: 15px 20px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); margin-bottom: 15px; }
+        .route-info-card.show { display: block; }
+        .route-info-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+        .route-info-label { color: #666; font-size: 13px; font-weight: 500; }
+        .route-info-value { font-size: 16px; font-weight: 600; color: #1f2937; }
+        .instructions-section { flex: 1; padding: 20px; border-bottom: 1px solid #e0e0e0; overflow-y: auto; }
+        .instructions-title { font-size: 14px; font-weight: 600; color: #666; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .instruction-item { display: flex; gap: 12px; padding: 12px; margin-bottom: 8px; background: #f9fafb; border-left: 3px solid #667eea; border-radius: 4px; font-size: 13px; color: #555; line-height: 1.4; }
+        .instruction-number { flex-shrink: 0; width: 24px; height: 24px; background: #667eea; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+        .junctions-section { padding: 20px; flex: 1.2; overflow-y: auto; }
+        .junctions-title { font-size: 14px; font-weight: 600; color: #666; margin-bottom: 12px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+        .junction-card { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 14px; margin-bottom: 10px; transition: all 0.2s; cursor: pointer; }
+        .junction-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .junction-number { flex-shrink: 0; width: 28px; height: 28px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+        .junction-name { flex: 1; font-weight: 600; color: #1f2937; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .junction-distance { background: #f0f4ff; color: #667eea; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+        .junction-coords { display: flex; gap: 15px; margin-bottom: 10px; }
+        .coord-item { flex: 1; display: flex; flex-direction: column; }
+        .coord-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.3px; }
+        .coord-value { font-size: 12px; color: #1f2937; font-weight: 500; font-family: 'Courier New', monospace; }
+        .eta-badge { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
+        .empty-state i { font-size: 48px; margin-bottom: 15px; opacity: 0.5; }
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; background: #e0ffe0; color: #00aa00; margin-left: auto;}
+    </style>
+</head>
+<body>
+
+<div class="navbar-custom">
+    <h1><div class="logo-icon"><i class="fas fa-map"></i></div>V2X Navigation</h1>
+</div>
+
+<div class="container-main">
+    <div id="map"></div>
+
+    <div class="sidebar">
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="dest-input" placeholder="🔍 Enter destination...">
+                <i class="fas fa-search"></i>
+            </div>
+            <button class="btn-route" id="btn-set-route" onclick="calculateRoute()">
+                <i class="fas fa-map-marker-alt"></i> Set Route
+            </button>
+            <button class="btn-clear-route" id="btn-clear-route" onclick="clearRoute()" style="display: none;">
+                <i class="fas fa-times"></i> Clear Route
+            </button>
+            <button class="btn-start-nav" id="btn-start-nav" onclick="startNavigation()">
+                <i class="fas fa-play-circle"></i> Start Navigation
+            </button>
+            <div id="nav-active-badge" class="navigation-active" style="display: none;">
+                <i class="fas fa-circle"></i><span>Navigation Active - MQTT Broadcasting</span>
+            </div>
+            <div class="route-info-card" id="route-info">
+                <div class="route-info-item"><span class="route-info-label">Distance</span><span class="route-info-value" id="dist-text">-</span></div>
+                <div class="route-info-item"><span class="route-info-label">Duration</span><span class="route-info-value" id="time-text">-</span></div>
+            </div>
+        </div>
+
+        <div class="instructions-section">
+            <div class="instructions-title"><i class="fas fa-directions"></i> Turn-by-turn</div>
+            <div id="instructions"><div class="empty-state"><i class="fas fa-compass"></i><p>Instructions will appear here</p></div></div>
+        </div>
+
+        <div class="junctions-section">
+            <div class="junctions-title"><i class="fas fa-road"></i> Approaching Junctions<span class="status-badge">LIVE</span></div>
+            <div id="junctions-list"><div class="empty-state"><i class="fas fa-traffic-light"></i><p>Junctions will appear here</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>{console.error("Google Maps API failed to load");h=n(Error(p+" could not load."))};a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+        key: "AIzaSyAFmCghEK343LuMuL1DSmCrujAbNcHsi1g",
+        v: "weekly",
+        libraries: ["maps", "routes", "places", "geometry"] // ADDED GEOMETRY
+    });
+</script>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+    // --- INTEGRATED COORDINATE DICTIONARY ---
+    const sampleRouteCoordinates = [
+        { lat: 8.536778560375351, lng: 76.88374047377879 },
+        { lat: 8.536665828811161, lng: 76.88376712184726 },
+        { lat: 8.53660904760558, lng: 76.88377188335123 },
+        { lat: 8.53652987461416, lng: 76.88377652450762 },
+        { lat: 8.536443816996178, lng: 76.88377536421852 },
+        { lat: 8.536371528582087, lng: 76.88377884508583 },
+        { lat: 8.536291777551355, lng: 76.88376997777918 },
+        { lat: 8.536308472650193, lng: 76.8838037420156 },
+        { lat: 8.536368831847634, lng: 76.88384919387232 },
+        { lat: 8.536436896463083, lng: 76.88390113885144 },
+        { lat: 8.536521656155937, lng: 76.88393750033683 },
+        { lat: 8.53659614193106, lng: 76.88397645907116 },
+        { lat: 8.53665521684585, lng: 76.88401411918103 },
+        { lat: 8.53673227106876, lng: 76.88406476553567 },
+        { lat: 8.536805472566144, lng: 76.88410762014342 },
+        { lat: 8.536874821345572, lng: 76.8841387871371 },
+        { lat: 8.536937748925927, lng: 76.884173849998 },
+        { lat: 8.536983981427314, lng: 76.88418813486726 },
+        { lat: 8.537044340517939, lng: 76.88422969085055 },
+        { lat: 8.537086720304693, lng: 76.88425826059286 },
+        { lat: 8.537171479853237, lng: 76.8842374826012 },
+        { lat: 8.537269081734294, lng: 76.88418553762207 },
+        { lat: 8.537335861954325, lng: 76.88414917613672 },
+        { lat: 8.537420621453814, lng: 76.8841037242789 },
+        { lat: 8.537475843537738, lng: 76.88407515454038 },
+        { lat: 8.537536202550577, lng: 76.88404009167948 },
+        { lat: 8.537622246233228, lng: 76.8839972370717 },
+        { lat: 8.537712142597373, lng: 76.88395048659049 },
+        { lat: 8.537769933110889, lng: 76.88390503473116 },
+        { lat: 8.537834144776866, lng: 76.88386867324577 },
+        { lat: 8.537885514101868, lng: 76.88385438837652 },
+        { lat: 8.537947157286776, lng: 76.88383361038267 },
+        { lat: 8.538019074318552, lng: 76.88380504064416 },
+        { lat: 8.53810511789566, lng: 76.88376997778096 },
+        { lat: 8.538180748395352, lng: 76.88373708352518 },
+        { lat: 8.538414691656516, lng: 76.88365534194833 },
+        { lat: 8.53855252405865, lng: 76.88358844088982 },
+        { lat: 8.53869403193972, lng: 76.88353640673321 },
+        { lat: 8.538864943985883, lng: 76.88347322240018 }
+    ];
+    let simulationIndex = 0;
+
+    let map;
+    let directionsService;
+    let directionsRenderer;
+    let autocomplete;
+    let vehicleMarker;
+    let socket;
+    
+    // NEW GLOBALS FOR ROUTE TRIMMING
+    let customRoutePolyline = null;
+    let fullRouteCoordinates = [];
+    
+    let currentJunctions = [];
+    let lastVehiclePosition = null;
+    let navigationActive = false;
+    let currentRouteData = null;
+    let continuousGpsInterval = null;
+    
+    // Used to pass to Flask on Start Navigation
+    let navOriginStr = ""; 
+    let navDestStr = "";
+
+    async function checkServerConnection() {
+        try {
+            const response = await fetch('/ping', { method: 'GET' });
+            return response.ok;
+        } catch (error) {
+            alert('⚠️ Flask server is not running!');
+            return false;
+        }
+    }
+
+    function calculateHeading(lat1, lon1, lat2, lon2) {
+        const dLon = lon2 - lon1;
+        const y = Math.sin(dLon) * Math.cos(lat2);
+        const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+        return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+    }
+
+    function animateMarkerMovement(fromLat, fromLon, toLat, toLon, duration = 1000) {
+        const startTime = Date.now();
+        function updatePosition() {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easeProgress = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+
+            const currentLat = fromLat + (toLat - fromLat) * easeProgress;
+            const currentLon = fromLon + (toLon - fromLon) * easeProgress;
+
+            if (vehicleMarker) {
+                vehicleMarker.setPosition({ lat: currentLat, lng: currentLon });
+                map.panTo(vehicleMarker.getPosition());
+            }
+
+            if (progress < 1) {
+                requestAnimationFrame(updatePosition);
+            }
+        }
+        updatePosition();
+    }
+
+    function updateVehicleMarkerWithDirection(lat, lon) {
+        if (!vehicleMarker || !lastVehiclePosition) return;
+        const heading = calculateHeading(lastVehiclePosition.lat, lastVehiclePosition.lon, lat, lon);
+        
+        const svgMarker = `
+            <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                <g transform="rotate(${heading} 20 20)">
+                    <circle cx="20" cy="20" r="14" fill="#667eea" stroke="white" stroke-width="2"/>
+                    <polygon points="20,8 26,26 14,26" fill="white" opacity="0.9"/>
+                    <circle cx="20" cy="20" r="3" fill="white"/>
+                </g>
+            </svg>`;
+            
+        vehicleMarker.setIcon({
+            url: 'data:image/svg+xml;base64,' + btoa(svgMarker),
+            scaledSize: new google.maps.Size(40, 40),
+            anchor: new google.maps.Point(20, 20)
+        });
+    }
+
+    // --- THE MAGIC: THIS TRIMS THE LINE ---
+    function updateRoutePolyline(currentLat, currentLon) {
+        if (!customRoutePolyline || fullRouteCoordinates.length === 0) return;
+        
+        const currentPos = new google.maps.LatLng(currentLat, currentLon);
+        let closestIndex = 0;
+        let shortestDistance = Number.MAX_VALUE;
+
+        // Find which part of the line the car is closest to
+        for (let i = 0; i < fullRouteCoordinates.length; i++) {
+            const dist = google.maps.geometry.spherical.computeDistanceBetween(currentPos, fullRouteCoordinates[i]);
+            if (dist < shortestDistance) {
+                shortestDistance = dist;
+                closestIndex = i;
+            }
+        }
+
+        // Chop off the past coordinates and start exactly at the car!
+        let activePath = fullRouteCoordinates.slice(closestIndex);
+        activePath.unshift(currentPos); 
+        
+        customRoutePolyline.setPath(activePath);
+    }
+    // --------------------------------------
+
+    function initWebSocket() {
+        socket = io();
+        socket.on('eta_update', (data) => updateJunctionsWithETA(data.junctions));
+    }
+
+    async function initDashboard() {
+        if (!await checkServerConnection()) return;
+        initWebSocket();
+        
+        // Use the first coordinate of the array as the starting position
+        let myPos = { lat: sampleRouteCoordinates[0].lat, lng: sampleRouteCoordinates[0].lng }; 
+        try {
+            const gpsResponse = await fetch('/get_gps?t=' + Date.now(), { cache: 'no-store' });
+            const gpsData = await gpsResponse.json();
+            if (gpsData.status === 'success') myPos = { lat: gpsData.latitude, lng: gpsData.longitude };
+        } catch (e) {}
+
+        // NOTE: removed startContinuousGpsPolling from here. It will trigger ONLY on Start Navigation.
+
+        const { Map } = await google.maps.importLibrary("maps");
+        const { DirectionsService, DirectionsRenderer } = await google.maps.importLibrary("routes");
+        const { Autocomplete } = await google.maps.importLibrary("places");
+
+        directionsService = new DirectionsService();
+        directionsRenderer = new DirectionsRenderer({ suppressPolylines: true }); // DISABLED DEFAULT LINE
+
+        map = new Map(document.getElementById("map"), { zoom: 13, center: myPos, mapId: "V2X_DASHBOARD_1" });
+        directionsRenderer.setMap(map);
+
+        vehicleMarker = new google.maps.Marker({
+            position: myPos, map: map, title: "Vehicle Position", zIndex: 9999,
+            icon: {
+                url: 'data:image/svg+xml;base64,' + btoa(`<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="14" fill="#667eea" stroke="white" stroke-width="2"/><polygon points="20,8 26,26 14,26" fill="white" opacity="0.9"/></svg>`),
+                scaledSize: new google.maps.Size(40, 40), anchor: new google.maps.Point(20, 20)
+            }
+        });
+
+        lastVehiclePosition = { lat: myPos.lat, lon: myPos.lng };
+        autocomplete = new Autocomplete(document.getElementById('dest-input'));
+    }
+
+    function calculateRoute() {
+        const destination = document.getElementById("dest-input").value;
+        const origin = lastVehiclePosition ? new google.maps.LatLng(lastVehiclePosition.lat, lastVehiclePosition.lon) : map.getCenter();
+
+        if (!destination) return alert("Please enter a destination");
+
+        directionsService.route({ origin: origin, destination: destination, travelMode: google.maps.TravelMode.DRIVING }, (result, status) => {
+            if (status === "OK") {
+                directionsRenderer.setDirections(result);
+                
+                // --- BUILD CUSTOM HIGH-RES POLYLINE ---
+                fullRouteCoordinates = [];
+                result.routes[0].legs[0].steps.forEach(step => {
+                    step.path.forEach(latLng => fullRouteCoordinates.push(latLng));
+                });
+
+                if (customRoutePolyline) customRoutePolyline.setMap(null);
+                
+                customRoutePolyline = new google.maps.Polyline({
+                    path: fullRouteCoordinates,
+                    geodesic: true,
+                    strokeColor: '#3b82f6', // Nice blue color
+                    strokeOpacity: 0.9,
+                    strokeWeight: 6,
+                    map: map
+                });
+                // ---------------------------------------
+
+                document.getElementById('btn-set-route').disabled = true;
+                document.getElementById('btn-clear-route').style.display = 'block';
+                
+                const leg = result.routes[0].legs[0];
+                document.getElementById('route-info').classList.add('show');
+                document.getElementById('dist-text').innerText = leg.distance.text;
+                document.getElementById('time-text').innerText = leg.duration.text;
+
+                fetchJunctions(origin, destination, leg.end_location, result);
+            }
+        });
+    }
+
+    function startNavigation() {
+        if (!currentRouteData || navigationActive) return;
+        navigationActive = true;
+        document.getElementById('nav-active-badge').style.display = 'flex';
+        document.getElementById('btn-start-nav').style.display = 'none';
+
+        if (socket && socket.connected) {
+            // Emitting this triggers the UDP packet to start the Python sender script
+            socket.emit('store_junctions', { 
+                junctions: currentRouteData.junctions, 
+                route_data: currentRouteData,
+                origin: navOriginStr,
+                destination: navDestStr
+            });
+        } 
+        
+        // NOW we start the movement logic to perfectly sync with the python script
+        startContinuousGpsPolling();
+    }
+
+    function clearRoute() {
+        if (socket && socket.connected) socket.emit('clear_route');
+        setTimeout(() => window.location.reload(true), 500); 
+    }
+
+    async function fetchJunctions(origin, destination, destLocation, routeData) {
+        // Save the string values to send over websocket later
+        navOriginStr = `${origin.lat()},${origin.lng()}`;
+        navDestStr = `${destLocation.lat()},${destLocation.lng()}`;
+        
+        try {
+            const response = await fetch('/get_route_junctions', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ origin: navOriginStr, destination: destination })
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                currentJunctions = data.junctions;
+                currentRouteData = data; 
+                displayJunctions(data.junctions);
+                document.getElementById('btn-start-nav').classList.add('show');
+            }
+        } catch (error) {}
+    }
+    
+    // Completely replaced to use the shared list instead of polling GPSD
+    function startContinuousGpsPolling() {
+        simulationIndex = 0; // Ensure it starts exactly at 0
+        
+        continuousGpsInterval = setInterval(() => {
+            if (!navigationActive) return;
+
+            try {
+                // Cycle through the predefined array
+                if (simulationIndex >= sampleRouteCoordinates.length) {
+                    simulationIndex = 0; // Loop around if we reach the end
+                }
+                
+                const newLat = sampleRouteCoordinates[simulationIndex].lat;
+                const newLon = sampleRouteCoordinates[simulationIndex].lng;
+                simulationIndex++;
+                
+                if (vehicleMarker && lastVehiclePosition) {
+                    const latDiff = Math.abs(newLat - lastVehiclePosition.lat);
+                    const lonDiff = Math.abs(newLon - lastVehiclePosition.lon);
+                    const approxDist = Math.sqrt((latDiff * 111000)**2 + (lonDiff * 111000 * Math.cos(newLat * Math.PI / 180))**2);
+                    
+                    if (approxDist > 0.0) {
+                        animateMarkerMovement(lastVehiclePosition.lat, lastVehiclePosition.lon, newLat, newLon, 500);
+                        updateVehicleMarkerWithDirection(newLat, newLon);
+                        
+                        // UPDATE THE ROUTE LINE TO FOLLOW THE CAR
+                        updateRoutePolyline(newLat, newLon);
+                        
+                        lastVehiclePosition = { lat: newLat, lon: newLon };
+                    } 
+                }
+
+                if (socket && socket.connected) {
+                    socket.emit('update_position', { latitude: newLat, longitude: newLon });
+                }
+            } catch (error) {}
+        }, 1000); // Trigger every 1 second, matching the python script exactly
+    }
+
+    function updateJunctionsWithETA(junctions) {
+        const junctionPanel = document.getElementById('junctions-list');
+        junctionPanel.innerHTML = '<h6 class="fw-bold mb-3">🛣️ Route Junctions (Real-time ETAs):</h6>';
+        junctions.forEach((junction, index) => {
+            junctionPanel.innerHTML += `
+                <div class="mb-3 p-2 border-bottom" style="background-color: #f9f9f9; border-radius: 6px;">
+                    <div class="fw-bold text-primary">Junction ${index + 1}</div>
+                    <div class="small text-muted mb-1">${junction.name}</div>
+                    <div class="small mt-2" style="background-color: #e8f4f8; padding: 8px; border-radius: 4px;">
+                        <strong style="color: #0066cc;">ETA:</strong> <span style="color: #d9534f;">${junction.eta_duration || 'N/A'}</span> (${junction.eta_distance || 'N/A'})
+                    </div>
+                </div>`;
+        });
+    }
+
+    function displayJunctions(junctions) {
+        const junctionPanel = document.getElementById('junctions-list');
+        junctionPanel.innerHTML = '';
+        junctions.forEach((junction, index) => {
+            junctionPanel.innerHTML += `
+                <div class="junction-card">
+                    <div class="junction-header">
+                        <div class="junction-number">${index + 1}</div>
+                        <div class="junction-name">${junction.name}</div>
+                    </div>
+                    <div class="eta-badge"><i class="fas fa-clock"></i><span>${junction.eta_duration || 'N/A'}</span></div>
+                </div>`;
+        });
+    }
+
+    window.onload = initDashboard;
+</script>
+</body>
+</html>
