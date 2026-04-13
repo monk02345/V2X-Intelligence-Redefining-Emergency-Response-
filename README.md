@@ -58,7 +58,7 @@ Follow this specific sequence to initialize the V2X network for a live demonstra
 1.  **Network Setup:** Connect the unit to the same localized Wi-Fi Direct network or subnet as the Host Vehicle.
 2.  **Run Alert Script:**
     ```bash
-    python remote_receiver.py
+    python z4offline2(org).py
     ```
 
 
