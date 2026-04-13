@@ -69,10 +69,10 @@ Follow this specific sequence to initialize the V2X network for a live demonstra
 
 1.  **Hardware Connection:** Plug the **Arduino Uno** into the laptop via USB.
 2.  **Arduino Setup:** Upload `trafficcontrol.ino` using the Arduino IDE. Confirm the Port (e.g., `COM5`).
-3.  **Geofence Map Configuration (KML):** * Ensure the file `UST Map (1).kml` is present in your project directory.
+3.  **Geofence Map Configuration (KML):** * Ensure the file `UST Map.kml` is present in your project directory.
     * Verify the `KML_FILE` path in the script matches your local path:
       ```python
-      KML_FILE = r"C:\Users\...\Downloads\UST Map (1).kml"
+      KML_FILE = r"C:\Users\...\Downloads\UST Map.kml"
       ```
 4.  **Run Decision Engine:**
     ```bash
