@@ -65,14 +65,16 @@ Follow this specific sequence to initialize the V2X network for a live demonstra
 ---
 
 ## 3. Traffic Junction RSU (The Controller)
-*The infrastructure unit is the final piece that manages the physical hardware override.*
+*The infrastructure unit manages geofencing logic and physical hardware overrides.*
 
 1.  **Hardware Connection:** Plug the **Arduino Uno** into the laptop via USB.
 2.  **Arduino Setup:** Upload `trafficcontrol.ino` using the Arduino IDE. Confirm the Port (e.g., `COM5`).
-3.  **Run Decision Engine:**
+3.  **Geofence Map Configuration (KML):** * Ensure the file `UST Map (1).kml` is present in your project directory.
+    * Verify the `KML_FILE` path in the script matches your local path:
+      ```python
+      KML_FILE = r"C:\Users\...\Downloads\UST Map (1).kml"
+      ```
+4.  **Run Decision Engine:**
     ```bash
-    v2xrsutest.py
+    python v2xrsutest.py
     ```
-4.  **Success Indicator:** * The console should print `Connected to Arduino on COM5`.
-    * A **Google Maps** window will launch, showing the geofenced sectors.
-    * The "Host Vehicle" marker should appear on the map as soon as the MQTT stream is received.
