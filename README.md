@@ -48,7 +48,7 @@ Follow this specific sequence to initialize the V2X network for a live demonstra
     ```bash
     python host_transmitter.py
     ```
-4.  **Success Indicator:** The terminal should display: `[MQTT] Payload Sent` and `[UDP] V2V Heartbeat Active`.
+
 
 ---
 
