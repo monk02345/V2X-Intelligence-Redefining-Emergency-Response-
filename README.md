@@ -43,7 +43,7 @@ Follow this specific sequence to initialize the V2X network for a live demonstra
 *The ambulance must start broadcasting telemetry to the cloud and local network first.*
 
 1.  **Hardware Connection:** Connect the **GPS Antenna** to the Raspberry Pi 4B.
-2.  **Internet Access:** Ensure the Pi is connected to the internet (via 4G Hat or Hotspot) to reach the MQTT Broker.
+2.  **Internet Access:** Ensure the Pi is connected to the internet (via 4G Hat) to reach the MQTT Broker.
 3.  **Run Broadcasting Script:**
     ```bash
     integrator.py
