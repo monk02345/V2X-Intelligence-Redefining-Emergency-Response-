@@ -70,14 +70,17 @@ Follow this specific sequence to initialize the V2X network for a live demonstra
 *The infrastructure unit manages geofencing logic and physical hardware overrides.*
 
 1.  **Hardware Connection:** Connect the traffic light modules to Arduino UNO as follows and  plug the **Arduino Uno** into the laptop via USB:
-   <img width="667" height="655" alt="image" src="https://github.com/user-attachments/assets/b6e48d05-b736-4852-907a-1bd16838e79e" />
+        <img width="667" height="655" alt="image" src="https://github.com/user-attachments/assets/b6e48d05-b736-4852-907a-1bd16838e79e" />
+
 2.  **Arduino Setup:** Upload `trafficcontrol.ino` using the Arduino IDE. Confirm the Port (e.g., `COM5`).
+  
 3.  **Geofence Map Configuration (KML):** * Ensure the file `UST Map.kml` is present in your project directory.
     * Verify the `KML_FILE` path in the script matches your local path:
       ```python
       KML_FILE = r"C:\Users\...\Downloads\UST Map.kml"
       ```
-3.  **Run Decision Engine:**
+      
+4.  **Run Decision Engine:**
     ```bash
     python v2xrsutest.py
     ```
