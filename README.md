@@ -1,4 +1,6 @@
 # V2X-Intelligence: Redefining Emergency Response
+<img width="467" height="262" alt="image" src="https://github.com/user-attachments/assets/629ddd65-f0b8-4948-809c-9924c7911648" />
+
 ## OVERVIEW
 This is an intelligent traffic management solution designed to prioritize and navigate emergency vehicles through desnse traffic using V2X Technology and thus reduce emergency response time. It uses V2I (Vehicle-to-Infrastructure) to preempt traffic lights and V2V (Vehicle-to-Vehicle) to alert surrounding drivers.
 ## SYSTEM ARCHITECTURE
@@ -67,14 +69,15 @@ Follow this specific sequence to initialize the V2X network for a live demonstra
 ## 3. Traffic Junction RSU (The Controller)
 *The infrastructure unit manages geofencing logic and physical hardware overrides.*
 
-1.  **Hardware Connection:** Plug the **Arduino Uno** into the laptop via USB.
-2.  **Arduino Setup:** Upload `trafficcontrol.ino` using the Arduino IDE. Confirm the Port (e.g., `COM5`).
-3.  **Geofence Map Configuration (KML):** * Ensure the file `UST Map.kml` is present in your project directory.
+1.  **Hardware Connection:** Connect the traffic light modules to Arduino UNO as follows and  plug the **Arduino Uno** into the laptop via USB:
+2.  <img width="667" height="655" alt="image" src="https://github.com/user-attachments/assets/b6e48d05-b736-4852-907a-1bd16838e79e" />
+4.  **Arduino Setup:** Upload `trafficcontrol.ino` using the Arduino IDE. Confirm the Port (e.g., `COM5`).
+5.  **Geofence Map Configuration (KML):** * Ensure the file `UST Map.kml` is present in your project directory.
     * Verify the `KML_FILE` path in the script matches your local path:
       ```python
       KML_FILE = r"C:\Users\...\Downloads\UST Map.kml"
       ```
-4.  **Run Decision Engine:**
+6.  **Run Decision Engine:**
     ```bash
     python v2xrsutest.py
     ```
