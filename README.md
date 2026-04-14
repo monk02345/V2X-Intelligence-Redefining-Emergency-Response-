@@ -11,7 +11,7 @@ The architecture is split into three main nodes, each handling specific communic
 The emergency vehicle acts as the primary data transmitter.
 * **Processing:** On-board **Raspberry Pi 4B**.
 * **Data:** Captures real-time telemetry via a **GPS Antenna**.
-* **Broadcasting:** Packages "uncooked" spatial info for simultaneous V2I and V2V transmission.
+* **Broadcasting:** Packages spatial info for simultaneous V2I and V2V transmission.
 
 ### 2. Traffic Junction RSU (V2I Pathway)
 Automates intersection clearing by overriding standard traffic timers.
