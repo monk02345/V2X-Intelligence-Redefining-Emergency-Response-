@@ -19,7 +19,7 @@ CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # ⚠️ SECURITY REMINDER: Revoke this key in Google Cloud and use environment variables later!
-GOOGLE_MAPS_API_KEY = "AIzaSyAFmCghEK343LuMuL1DSmCrujAbNcHsi1g"
+GOOGLE_MAPS_API_KEY = "PASTE YOUR CODE HERE"
 
 # GLOBAL VARIABLES 
 current_junctions = []
