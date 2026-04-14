@@ -1,0 +1,45 @@
+get a system with ubuntu
+Create a working directory:
+mkdir ~/v2x_routing && cd ~/v2x_routing
+
+download and unzip the file named test2 and and place the files in the v2x routing folder
+
+downlaod graphhopper
+ wget -O graphhopper-web-8.0.jar https://repo1.maven.org/maven2/com/graphhopper/graphhopper-web/8.0/graphhopper-web-8.0.jar
+
+download the map area from bbbike
+
+
+You need to do this twice: once for GraphHopper (Routing) and once for TileServer-GL (3D Graphics).
+1. Get the Small Routing File (For GraphHopper)
+
+    Go to extract.bbbike.org in your web browser.
+
+    Under the Format dropdown, select Protocolbuffer (PBF).
+
+    Type "Thiruvananthapuram" into the search bar to move the map.
+
+    Click the "Here" button to generate a bounding box. Drag the corners so it covers the exact area your emergency vehicles will operate in (e.g., covering Technopark down to Kowdiar).
+
+    Enter your email address and click Extract.
+
+    In about 2 minutes, you will get an email with a link to download your tiny .osm.pbf file (it will likely be less than 10MB!). Rename this file to southern-zone-latest.osm and put it in your ~/v2x_routing folder.
+    
+   
+  2. Get the Small 3D Graphics File (For TileServer-GL)
+
+    Go right back to the BBBike website with your box still drawn.
+
+    Change the Format dropdown to MBTiles (OpenMapTiles). (This is crucial—this format contains the 3D mathematical vectors required by our PyQt UI).
+
+    Click Extract again.
+
+    Download the file, rename it to trivandrum.mbtiles, and place it in your ~/v2x_routing folder.
+
+
+Run the command to start the graphhopper server
+    java -Xmx2g -jar graphhopper-web-8.0.jar server config.yml
+(you can also make this into a service or run this on a seprate terminal every time )
+
+
+import the v2x_routing folder into vscode and run the z4_orgtest.py code to receive data from the host vehicle and view the alert popup
